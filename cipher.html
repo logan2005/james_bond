@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Level 2: Answer Comparison</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+        }
+        .input-group {
+            margin-top: 20px;
+        }
+        .result {
+            margin-top: 20px;
+        }
+        .warning-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 0, 0, 0.9);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            display: none;
+            z-index: 9999;
+        }
+        .story {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        .mission {
+            display: none;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="warning-overlay" id="warning-overlay">
+        Warning: Inspect Element is Disabled!
+    </div>
+    <div class="container">
+        <div class="story" id="story">
+            <h1>Level 2: The Spy Story Continues</h1>
+            <p>Your mission is to decode a secret Vigenère cipher using the key you found in Level 1.</p>
+            <p>The cipher holds the code to advance to the next level.</p>
+        </div>
+        
+        <div class="mission" id="mission">
+            
+            <h1>Level 2: Decode this Vigenere Cipher code</h1>
+            <p>xrlpdsio uy btxtc ! kftgq tc zpjglpw</p>
+            <p>Enter the correct answer to proceed:</p>
+            <form id="answer-form" class="input-group">
+                <input type="text" id="answer-input" class="form-control" placeholder="Enter your answer" required>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+            <div id="result" class="result"></div>
+
+            <!-- Video Memes -->
+            <video id="correct-video" style="display: none;" width="320" height="240">
+                <source src="vanakkam.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+
+            <video id="wrong-video" style="display: none;" width="320" height="240">
+                <source src="onion.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#story').show();
+            setTimeout(function() {
+                $('#story').hide();
+                $('#mission').show();
+            }, 10000); // 10 seconds delay before showing the mission
+
+            $('#answer-form').submit(function(event) {
+                event.preventDefault();
+                const answer = $('#answer-input').val().trim().toLowerCase();
+
+                if (answer === "vanakkam da mapla ! theni la irundhu") {
+                    $('#result').html(`<p>Correct Answer!</p>`);
+                    $('#correct-video').show().get(0).play();
+                    setTimeout(function() {
+                        window.location.href = 'maze.html'; // Redirect to next level
+                    }, 5000); // 5 seconds delay before redirecting
+                } else {
+                    $('#result').html(`<p>Incorrect Answer. Please try again.</p>`);
+                    $('#wrong-video').show().get(0).play();
+                    setTimeout(function() {
+                        location.reload();
+                    }, 5000); // 5 seconds delay before reloading
+                }
+            });
+
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && e.key === 'I')) {
+                    e.preventDefault();
+                    document.getElementById('warning-overlay').style.display = 'flex';
+                }
+            });
+
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                document.getElementById('warning-overlay').style.display = 'flex';
+            });
+        });
+    </script>
+</body>
+</html>

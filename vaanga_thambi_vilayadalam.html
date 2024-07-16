@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Level 1: Decrypting the Message</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .matrix {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background: black;
+            overflow: hidden;
+            z-index: -1;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+        }
+        .input-group {
+            margin-top: 20px;
+        }
+        .warning-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 0, 0, 0.9);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            display: none;
+            z-index: 9999;
+        }
+    </style>
+</head>
+<body>
+    <canvas class="matrix" id="matrix"></canvas>
+    <div class="warning-overlay" id="warning-overlay">
+        Warning: Inspect Element is Disabled!
+    </div>
+    <div class="container">
+        <h1>Welcome to Level 1: Decrypting the Message</h1>
+        <p>எதிரியின் பாதுகாப்பு அகாடமியின் நெரிசலான கம்ப்யூட்டர் ஆய்வகத்தில், ஏஜெண்ட் அமைதியாக தங்கள் திரைகளில் கவனம் செலுத்திய மாணவர்களைக் கடந்து சென்றார். முக்கிய கணினிகளை மறைத்திருந்த தடித்த திரைச்சீலைகளுக்குப் பின்னால், முக்கியமான ரகசியங்கள் மறைக்கப்பட்டிருந்தன. இயந்திரங்களின் ரீங்காரம் மற்றும் விசைப்பலகைகளில் தட்டச்சு செய்யும் ஒலிகளுக்கு மத்தியில், மறைக்கப்பட்ட சாவியைக் கண்டுபிடிப்பது தனது ரகசிய பணிக்கு முக்கியமானது என்பதை அறிந்திருந்தார்.</p>
+        <form id="answer-form" class="input-group">
+            <input type="text" id="answer-input" class="form-control" placeholder="Enter your answer" required>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+        <div id="result"></div>
+    </div>
+
+    <!-- Developer Tools Warning -->
+    <div class="devtools-warning" id="devtools-warning">
+        <p>Developer tools are disabled on this page for security reasons.</p>
+    </div>
+
+    <script>
+        const correctAnswer = "LOGAN"; // Replace with actual correct answer
+
+        document.getElementById('answer-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const answer = document.getElementById('answer-input').value.trim();
+
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '';
+
+            if (answer === correctAnswer) {
+                const video = document.createElement('video');
+                video.width = 320;
+                video.height = 240;
+                video.autoplay = true;
+                video.innerHTML = '<source src="super.mp4" type="video/mp4">Your browser does not support the video tag.';
+                resultDiv.appendChild(video);
+                video.play().catch(error => console.log('Error playing video:', error));
+                
+                setTimeout(function() {
+                    window.location.href = 'cipher.html'; // Redirect to next level
+                }, 8000); // 8 seconds delay before redirecting
+            } else {
+                const video = document.createElement('video');
+                video.width = 320;
+                video.height = 240;
+                video.autoplay = true;
+                video.innerHTML = '<source src="vaipilla.mp4" type="video/mp4">Your browser does not support the video tag.';
+                resultDiv.appendChild(video);
+                video.play().catch(error => console.log('Error playing video:', error));
+                
+                setTimeout(function() {
+                    location.reload(); // Refresh the page on incorrect answer
+                }, 8000); // 8 seconds delay before refreshing
+            }
+        });
+
+        // Matrix effect animation
+        const canvas = document.getElementById('matrix');
+        const ctx = canvas.getContext('2d');
+        const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        const fontSize = 2;
+        const columns = canvas.width / fontSize;
+        const drops = Array.from({ length: columns }, () => 1);
+
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#0F0';
+            ctx.font = `${fontSize}px arial`;
+
+            for (let i = 0; i < drops.length; i++) {
+                const text = letters[Math.floor(Math.random() * letters.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+
+        setInterval(drawMatrix, 50);
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && e.key === 'I')) {
+                e.preventDefault();
+                document.getElementById('warning-overlay').style.display = 'flex';
+            }
+        });
+
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            document.getElementById('warning-overlay').style.display = 'flex';
+        });
+    </script>
+</body>
+</html>

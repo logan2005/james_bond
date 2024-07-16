@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Level 5: Computer Access</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        #computer {
+            width: 80%;
+            max-width: 600px;
+            border: 2px solid #fff;
+            padding: 20px;
+            text-align: center;
+        }
+        #question-container {
+            margin-top: 20px;
+        }
+        .clue {
+            width: 100px;
+            height: 100px;
+            background: url('instagram_clue.jpg') no-repeat center center;
+            background-size: cover;
+            margin-top: 20px;
+            cursor: pointer;
+        }
+        .clue-enlarge {
+            animation: enlarge 5s forwards;
+        }
+        @keyframes enlarge {
+            from {
+                transform: scale(1);
+            }
+            to {
+                transform: scale(10);
+            }
+        }
+        .warning-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 0, 0, 0.9);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            display: none;
+            z-index: 9999;
+        }
+        .meme-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            display: none;
+            z-index: 9998;
+        }
+        .meme-overlay video {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <audio id="bg-audio" loop>
+        <source src="kandhasamy.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+    <div class="warning-overlay" id="warning-overlay">
+        Warning: Inspect Element is Disabled!
+    </div>
+    <div id="computer">
+        <marquee width="60%" direction="left" height="50px" style="color: aliceblue; font-size: 7px;">------------INSTAGRAM PAARUNGA PA ! INtha page la oru image irukku athula clue irukku. antha image ah click panni priya kitta pesunga appo tha answer kedaikum---------</marquee>
+        <h1>Level 5: Hack the Computer</h1>
+        <p>Answer the following questions to the person provided in the clue:</p>
+        <div id="clue" class="clue">
+            <img style="height: 10px; width: auto;" src="clue.png"/>
+        </div>
+        <button id="play-button" class="btn btn-primary mt-3">Start</button>
+        <div id="question-container"></div>
+        <form id="answer-form" class="input-group" style="display: none;">
+            <input type="text" id="answer-input" class="form-control" style="width: max-content; height:auto; align-items: center;" placeholder="Enter your answer" required>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+
+    <div class="meme-overlay" id="meme-overlay">
+        <video id="meme-video">
+            <source src="boom_chikichikichiki.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        const questions = [
+            { question: "What is the name of the girl's pet?", correctAnswer: "fluffy" },
+            { question: "Where did the girl and the agent first meet?", correctAnswer: "cafe" },
+            { question: "What is the girl's favorite color?", correctAnswer: "blue" }
+        ];
+        let currentQuestionIndex = 0;
+
+        const questionContainer = document.getElementById('question-container');
+        const answerForm = document.getElementById('answer-form');
+        const answerInput = document.getElementById('answer-input');
+        const memeOverlay = document.getElementById('meme-overlay');
+        const memeVideo = document.getElementById('meme-video');
+        const playButton = document.getElementById('play-button');
+        const bgAudio = document.getElementById('bg-audio');
+
+        playButton.addEventListener('click', function () {
+            bgAudio.play();
+            playButton.style.display = 'none';
+            displayNextQuestion();
+        });
+
+        document.getElementById('clue').addEventListener('click', function () {
+            this.classList.add('clue-enlarge');
+            setTimeout(() => {
+                this.classList.remove('clue-enlarge');
+            }, 5000); // Enlarge for 5 seconds
+        });
+
+        function displayNextQuestion() {
+            if (currentQuestionIndex < questions.length) {
+                const question = questions[currentQuestionIndex].question;
+                questionContainer.innerHTML = `<p>${question}</p>`;
+                answerForm.style.display = 'block';
+            } else {
+                alert('Congratulations! COMPUTER UNLOCKED');
+                window.location.href = 'alaratha_off_panuda.html'; // Redirect to the next level
+            }
+        }
+
+        answerForm.addEventListener('submit', function (event) {
+            event.preventDefault();
+            const answer = answerInput.value.trim().toLowerCase();
+
+            if (answer === questions[currentQuestionIndex].correctAnswer) {
+                currentQuestionIndex++;
+                answerInput.value = '';
+                displayNextQuestion();
+            } else {
+                answerInput.value = '';
+                answerForm.style.display = 'none';
+                bgAudio.pause(); // Pause background audio
+                memeOverlay.style.display = 'flex';
+                memeVideo.play();
+                setTimeout(() => {
+                    memeOverlay.style.display = 'none';
+                    bgAudio.play(); // Resume background audio
+                    displayNextQuestion();
+                }, 5000); // Show meme for 5 seconds
+            }
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && e.key === 'I')) {
+                e.preventDefault();
+                document.getElementById('warning-overlay').style.display = 'flex';
+            }
+        });
+
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            document.getElementById('warning-overlay').style.display = 'flex';
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Level 6: Security Breach</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        /* Basic styling for the body to make it fullscreen, centered, and dark-themed */
+        body {
+            background-color: black;
+            color: white;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        /* Styling for the container of the game */
+        #computer {
+            width: 80%;
+            max-width: 600px;
+            border: 2px solid #fff;
+            padding: 20px;
+            text-align: center;
+        }
+        #question-container {
+            margin-top: 20px;
+        }
+        /* Styling for the warning overlay when inspect element is triggered */
+        .warning-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 0, 0, 0.9);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            display: none;
+            z-index: 9999;
+        }
+        /* Styling for the meme overlay */
+        .meme-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            display: none;
+            z-index: 9998;
+        }
+        .meme-overlay video {
+            width: 100%;
+            height: 100%;
+            max-width: 800px;
+            max-height: 600px;
+        }
+        /* Styling for the answer input boxes */
+        .letter-input {
+            width: 30px;
+            height: 30px;
+            text-align: center;
+            margin: 5px;
+            font-size: 1.2em;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            background-color: white;
+            transition: background-color 0.3s ease;
+        }
+        .correct {
+            background-color: lightgreen;
+        }
+        .incorrect {
+            background-color: tomato;
+        }
+    </style>
+</head>
+<body>
+    <!-- Audio element for the alarm siren -->
+    <audio id="siren-audio" loop>
+        <source src="siren.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+    <!-- Warning overlay for disabling inspect element -->
+    <div class="warning-overlay" id="warning-overlay">
+        Warning: Inspect Element is Disabled!
+    </div>
+    <!-- Main game container -->
+    <div id="computer">
+        <h1>Level 6: Security Breach</h1>
+        <p>The security alarm has gone off! Solve the puzzles to stop the alarm:</p>
+        <p style="font-size: 9px;">Note : Remember the answers</p>
+        <div id="question-container"></div>
+        <button id="start-button" class="btn btn-primary mt-3">Start Level</button>
+        <form id="answer-form" class="input-group" style="display: none;">
+            <div id="answer-inputs" class="d-flex justify-content-center"></div>
+            <button type="submit" class="btn btn-primary mt-3">Submit</button>
+        </form>
+    </div>
+
+    <!-- Meme overlay for incorrect answers -->
+    <div class="meme-overlay" id="meme-overlay">
+        <video id="meme-video" autoplay>
+            <source src="unnala.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+
+    <!-- Include jQuery and Bootstrap JS libraries -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        // Array of questions and answers
+        const questions = [
+            { question: "1. Ben ooda friend yaaru ?", correctAnswer: "kevin" },
+            { question: "2.Vada Chennai Hero character name enna?", correctAnswer: "anbu" },
+            { question: "3.Black widow character name enna?", correctAnswer: "Natasha" },
+            {question: "4.Rolex avan peru __________?", correctAnswer:"Dilli"},
+            {question: "5.Opposite of down ?", correctAnswer:"Up"},
+            { question: "6.Group of lions called as?", correctAnswer: "pride" },
+            { question: "7.Tom Holland nadicha game movie name enna?", correctAnswer: "Uncharted" },
+            {question: "8.(((100/5)+3)*2)+((24/6)+5)-((16*2)-52)-71 th letter of the alphabet", correctAnswer:"D"},
+            {question: "9.Pookale satru ooivedungal paatu varum movie peru?", correctAnswer:"I"},
+        ];
+        let currentQuestionIndex = 0;
+        let correctWord = "";
+
+        // References to DOM elements
+        const questionContainer = document.getElementById('question-container');
+        const answerInputsContainer = document.getElementById('answer-inputs');
+        const answerForm = document.getElementById('answer-form');
+        const memeOverlay = document.getElementById('meme-overlay');
+        const memeVideo = document.getElementById('meme-video');
+        const sirenAudio = document.getElementById('siren-audio');
+
+        // Display the next question
+        function displayNextQuestion() {
+            if (currentQuestionIndex < questions.length) {
+                const question = questions[currentQuestionIndex].question;
+                questionContainer.innerHTML = `<p>${question}</p>`;
+                createAnswerInputs(questions[currentQuestionIndex].correctAnswer.length);
+                answerForm.style.display = 'block';
+            } else {
+                alert('Congratulations! ALARM STOPPED');
+                sirenAudio.pause();
+                window.location.href = 'room_fulla_thedu.html'; // Redirect to the next level
+            }
+        }
+
+        // Create input boxes for the answer
+        function createAnswerInputs(numInputs) {
+            answerInputsContainer.innerHTML = ""; // Clear previous inputs if any
+            correctWord = ""; // Reset correctWord
+            for (let i = 0; i < numInputs; i++) {
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.maxLength = 1;
+                input.classList.add('letter-input');
+                input.dataset.index = i;
+                input.addEventListener('input', handleInput);
+                answerInputsContainer.appendChild(input);
+            }
+        }
+
+        // Handle input in the answer boxes
+        function handleInput(event) {
+            const index = event.target.dataset.index;
+            const answer = questions[currentQuestionIndex].correctAnswer.toLowerCase();
+            const enteredLetter = event.target.value.toLowerCase();
+
+            if (enteredLetter === answer[index]) {
+                event.target.classList.remove('incorrect');
+                event.target.classList.add('correct');
+                correctWord += enteredLetter;
+
+                // Check if all inputs are correct
+                if (correctWord.length === answer.length) {
+                    currentQuestionIndex++;
+                    answerForm.style.display = 'none';
+                    setTimeout(() => {
+                        displayNextQuestion();
+                    }, 2000); // Delay before moving to next question
+                }
+            } else {
+                event.target.classList.remove('correct');
+                event.target.classList.add('incorrect');
+                displayMeme();
+            }
+        }
+
+        // Display meme for incorrect answer
+        function displayMeme() {
+            sirenAudio.pause(); // Pause siren audio
+            memeOverlay.style.display = 'flex';
+            memeVideo.currentTime = 0;
+            memeVideo.play();
+
+            // Resume siren audio when meme video ends
+            memeVideo.onended = function() {
+                memeOverlay.style.display = 'none';
+                sirenAudio.play();
+            };
+        }
+
+        // Prevent form submission
+        answerForm.addEventListener('submit', function (event) {
+            event.preventDefault();
+        });
+
+        // Start the level when the button is clicked
+        document.getElementById('start-button').addEventListener('click', function() {
+            sirenAudio.play();
+            document.getElementById('start-button').disabled = true;
+            displayNextQuestion();
+        });
+
+        // Disable inspect element
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && e.key === 'I')) {
+                e.preventDefault();
+                document.getElementById('warning-overlay').style.display = 'flex';
+            }
+        });
+
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            document.getElementById('warning-overlay').style.display = 'flex';
+        });
+    </script>
+</body>
+</html>

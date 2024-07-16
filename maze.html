@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Maze Level</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        #maze-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        #maze {
+            display: grid;
+            grid-template-columns: repeat(20, 20px);
+            grid-template-rows: repeat(20, 20px);
+        }
+        .cell {
+            width: 20px;
+            height: 20px;
+            border: 1px solid #fff;
+        }
+        .wall {
+            background-color: #00eaff;
+        }
+        .start {
+            background-color: green;
+        }
+        .end {
+            background-color: red;
+            border: 2px solid yellow;
+            box-shadow: 0 0 10px yellow;
+        }
+        .player {
+            background-color: yellow;
+        }
+        .warning-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 0, 0, 0.9);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            display: none;
+            z-index: 9999;
+        }
+        #meme-container {
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        #meme {
+            max-width: 300px;
+            border: 2px solid yellow;
+            box-shadow: 0 0 10px yellow;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="warning-overlay" id="warning-overlay">
+        Warning: Inspect Element is Disabled!
+    </div>
+    <div id="maze-container">
+        <h1>Navigate the  Maze</h1>
+        <p>Use ARROW keys to navigate through the maze. Reach the end TO GO TO THE NEXT LEVEL</p>
+        <div id="maze"></div>
+    </div>
+    <div id="meme-container">
+        <video id="meme" src="epudraa.mp4" alt="Congratulations Meme" controls autoplay="true"> </video>
+        <button id="next-level-button" class="btn btn-primary">Proceed to Next Level</button>
+    </div>
+
+    <script>
+        const mazeLayout = [
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 1],
+            [1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1],
+            [1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1],
+            [1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 1],
+            [1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 0, 1],
+            [1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1],
+            [1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1],
+            [1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1],
+            [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1],
+            [1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1],
+            [1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1],
+            [1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1],
+            [1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1],
+            [1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1],
+            [1, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        ];
+
+        const mazeContainer = document.getElementById('maze');
+        const memeContainer = document.getElementById('meme-container');
+        const nextLevelButton = document.getElementById('next-level-button');
+        const player = { x: 1, y: 1 };
+
+        nextLevelButton.addEventListener('click', () => {
+            alert('Your code number is: 285643901697653680');
+            window.location.href = 'athusecret.html'; // Redirect to next level
+        });
+
+        function drawMaze() {
+            mazeContainer.innerHTML = '';
+            mazeLayout.forEach((row, rowIndex) => {
+                row.forEach((cell, colIndex) => {
+                    const cellDiv = document.createElement('div');
+                    cellDiv.classList.add('cell');
+                    if (cell === 1) {
+                        cellDiv.classList.add('wall');
+                    } else if (rowIndex === player.y && colIndex === player.x) {
+                        cellDiv.classList.add('player');
+                    } else if (rowIndex === 18 && colIndex === 18) {
+                        cellDiv.classList.add('end');
+                        cellDiv.innerHTML = 'E'; // Add marker for end point
+                        cellDiv.style.color = 'yellow'; // Optional: Color for the text
+                        cellDiv.style.textAlign = 'center'; // Center the text
+                        cellDiv.style.fontWeight = 'bold'; // Make the text bold
+                    }
+                    mazeContainer.appendChild(cellDiv);
+                });
+            });
+        }
+
+        function movePlayer(x, y) {
+        const newX = player.x + x;
+        const newY = player.y + y;
+        if (mazeLayout[newY][newX] === 0 || (newX === 18 && newY === 18)) {
+            player.x = newX;
+            player.y = newY;
+            drawMaze();
+            if (newX === 18 && newY === 18) {
+                // Show meme and next level button
+                memeContainer.style.display = 'flex';
+                alert('Congratulations! You reached the end.');
+            }
+        }
+    }
+
+    document.addEventListener('keydown', function(event) {
+        switch (event.key) {
+            case 'ArrowUp':
+                movePlayer(0, -1);
+                break;
+            case 'ArrowDown':
+                movePlayer(0, 1);
+                break;
+            case 'ArrowLeft':
+                movePlayer(-1, 0);
+                break;
+            case 'ArrowRight':
+                movePlayer(1, 0);
+                break;
+        }
+    });
+
+    drawMaze();
+</script>
+</body>
+</html>

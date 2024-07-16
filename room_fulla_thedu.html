@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Level 7: Decode the Secret</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        /* Basic styling for the body to make it fullscreen, centered, and dark-themed */
+        body {
+            background-color: black;
+            color: white;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        /* Styling for the container of the game */
+        #computer {
+            width: 80%;
+            max-width: 600px;
+            border: 2px solid #fff;
+            padding: 20px;
+            text-align: center;
+        }
+        /* Styling for the meme overlay */
+        .meme-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            display: none;
+            z-index: 9998;
+        }
+        .meme-overlay video {
+            width: 100%;
+            height: 100%;
+            max-width: 800px;
+            max-height: 600px;
+        }
+        /* Styling for the answer input box */
+        .letter-input {
+            width: 30px;
+            height: 30px;
+            text-align: center;
+            margin: 5px;
+            font-size: 1.2em;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            background-color: white;
+            transition: background-color 0.3s ease;
+        }
+        .correct {
+            background-color: lightgreen;
+        }
+        .incorrect {
+            background-color: tomato;
+        }
+        /* Styling for the morse code text */
+        .morse-code {
+            font-size: 1.5em;
+            margin-top: 20px;
+            display: none;
+        }
+        /* Styling for the final form */
+        #final-form {
+            margin-top: 20px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Main game container -->
+    <div id="computer">
+        <h1>Level 7: Decode the Secret</h1>
+        <p>Enter the first letters of all the 9 answers from the previous level:</p>
+        <form id="answer-form" class="input-group">
+            <input type="text" id="answer-input" class="form-control" maxlength="9">
+            <button type="submit" class="btn btn-primary ml-2">Submit</button>
+        </form>
+        <div class="morse-code" id="morse-code">
+            In the labyrinthine office filled with an array of identical workstations, the agent's attention was subtly drawn to one particular system, marked with the identifier SCAS/CS/I/1/2/45. The room buzzed with an undercurrent of urgency, but there was something about this specific station that whispered of hidden secrets. As the agent approached, a glint of metal beneath the keyboard caught the corner of their eye, almost imperceptible but undeniably present. It was an overlooked detail, perhaps by design, that suggested a concealed layer of information. The agent's fingers brushed lightly over the keys, the mundane tapping masking an intent gaze that noted the faintest shadow below the keyboard. There, beneath the surface, lay a story waiting to be uncovered, a silent prompt to those observant enough to recognize the significance of the smallest hint. In the world of espionage, the true secrets often linger just out of plain sight, beneath the seemingly ordinary facades.
+        </div>
+        <form id="final-form" class="input-group mt-3">
+            <p>Thakkali Kilo 15 Rooba</p>
+            <input type="text" id="final-input" class="form-control" placeholder="Enter final code" style="width: 500px;">
+            <button type="submit" class="btn btn-primary ml-2">Submit</button>
+        </form>
+    </div>
+
+    <!-- Meme overlay for incorrect answers -->
+    <div class="meme-overlay" id="meme-overlay">
+        <video id="meme-video" autoplay>
+            <source src="unnala.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+
+    <!-- Include jQuery and Bootstrap JS libraries -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        // The correct answer for the first part
+        const correctAnswer = "kandupudi";
+        // The final code after decoding the Morse code (replace with actual decoded answer)
+        const finalCode = "nethe veetla vaangi vechuten";
+        // References to DOM elements
+        const memeOverlay = document.getElementById('meme-overlay');
+        const memeVideo = document.getElementById('meme-video');
+        const morseCodeElement = document.getElementById('morse-code');
+        const finalForm = document.getElementById('final-form');
+
+        // Function to display the meme overlay
+        function displayMeme() {
+            memeOverlay.style.display = 'flex';
+            memeVideo.currentTime = 0;
+            memeVideo.play();
+            memeVideo.onended = () => {
+                memeOverlay.style.display = 'none';
+            };
+        }
+
+        // Disable right-click context menu
+        document.addEventListener('contextmenu', event => event.preventDefault());
+
+        // Disable certain keyboard shortcuts
+        document.addEventListener('keydown', function(event) {
+            if (event.keyCode == 123 || // F12
+                (event.ctrlKey && event.shiftKey && event.keyCode == 73) || // Ctrl+Shift+I
+                (event.ctrlKey && event.shiftKey && event.keyCode == 74) || // Ctrl+Shift+J
+                (event.ctrlKey && event.keyCode == 85)) { // Ctrl+U
+                event.preventDefault();
+            }
+        });
+
+        // Event listener for the first answer form submission
+        document.getElementById('answer-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const answerInput = document.getElementById('answer-input').value.toLowerCase();
+            if (answerInput === correctAnswer) {
+                morseCodeElement.style.display = 'block';
+                finalForm.style.display = 'block';
+            } else {
+                displayMeme();
+            }
+        });
+
+        // Event listener for the final form submission
+        document.getElementById('final-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const finalInput = document.getElementById('final-input').value.toLowerCase();
+            if (finalInput === finalCode) {
+                window.location.href = 'https://spymission-online.web.app'; // Redirect to the next level
+            } else {
+                displayMeme();
+            }
+        });
+    </script>
+</body>
+</html>
